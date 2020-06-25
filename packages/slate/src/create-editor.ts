@@ -70,6 +70,7 @@ export const createEditor = (): Editor => {
 
       DIRTY_PATHS.set(editor, dirtyPaths)
       Editor.transform(editor, op)
+      editor.operations = editor.operations.slice()
       editor.operations.push(op)
       Editor.normalize(editor)
 
