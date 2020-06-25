@@ -1,4 +1,5 @@
 import { Editor, Operation, Path } from 'slate'
+import cloneDeep from 'lodash/cloneDeep'
 
 import { HistoryEditor } from './history-editor'
 
@@ -12,9 +13,15 @@ export const withHistory = <T extends Editor>(editor: T) => {
   const { apply } = e
   e.history = { undos: [], redos: [] }
 
+  function cloneHistory() {
+    e.history = cloneDeep(e.history)
+  }
+
   e.redo = () => {
+    cloneHistory()
+
     const { history } = e
-    const { redos } = history
+    const { undos, redos } = history
 
     if (redos.length > 0) {
       const batch = redos[redos.length - 1]
@@ -33,6 +40,8 @@ export const withHistory = <T extends Editor>(editor: T) => {
   }
 
   e.undo = () => {
+    cloneHistory()
+
     const { history } = e
     const { undos } = history
 
@@ -64,6 +73,8 @@ export const withHistory = <T extends Editor>(editor: T) => {
   }
 
   e.apply = (op: Operation) => {
+    cloneHistory()
+
     const { operations, history } = e
     const { undos } = history
     const lastBatch = undos[undos.length - 1]
